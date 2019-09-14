@@ -16,7 +16,7 @@ gp.onChange { (gpio) in
         preTime = DispatchTime.now().uptimeNanoseconds
         print("收到信号，1s 后打印结果")
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1, execute: {
-            print(times)
+            IRDecode.decode(times: times)
             preTime = 0
             times = []
         })
@@ -26,4 +26,15 @@ gp.onChange { (gpio) in
         preTime = now
     }
 }
+
+func send() {
+    let gpios = SwiftyGPIO.GPIOs(for:.RaspberryPi3)
+    let gp = gpios[.pin17]!
+    gp.direction = .output
+    gp.value = false
+    let times: [UInt32] = [4000, 4000, 500, 2000, 500, 2000, 500, 2000, 500, 2000, 500, 1000, 500, 1000, 500, 2000, 500, 1000, 500, 2000, 500, 1000, 500, 2000, 500, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 1000, 500, 2000, 500, 2000, 500, 1000, 500, 2000, 500, 1000, 500, 2000, 500, 1000, 500, 2000, 500]
+    irSlingRaw(outPin: 17, frequency: 38000, dutyCycle: 0.5, codes: times)
+}
+
+send()
 RunLoop.main.run()
